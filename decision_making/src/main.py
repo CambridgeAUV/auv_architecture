@@ -2,6 +2,7 @@
 
 import rospy
 import std_msgs
+import cauv_msgs.msg
 
 class DecisionMaking():
 
@@ -56,6 +57,8 @@ class DecisionMaking():
 
 
 if __name__ == '__main__':
+    print "Decision making running"
+
     decision_making = DecisionMaking()
     try:
         decision_making.run()
