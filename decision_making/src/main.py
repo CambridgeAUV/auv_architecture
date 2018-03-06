@@ -20,7 +20,7 @@ class DecisionMaking():
         rospy.init_node('decision_making')
         self.yaw_publisher = rospy.Publisher('yaw_demand', std_msgs.msg.String, queue_size = 10)
         rospy.Subscriber('river_sides', std_msgs.msg.Float32MultiArray, self.river_sides_callback)
-        rospy.Subscriber('current_yaw', std_msgs.msg.Float32, self.current_yaw_callback)
+        rospy.Subscriber('imu_data', cauv_msgs.msg.imu, self.imu_data_callback)
 
         self.rate = rospy.Rate(10)
 
@@ -28,10 +28,10 @@ class DecisionMaking():
         if not(len(data.data) == 0):
             self.river_side_data = data.data
 
-    def current_yaw_callback(self, data):
-        print "current_yaw_callback setting self.current_yaw to: ", data.data
-        # Is it necessary to add a check that the data is not 0?
-        self.current_yaw = data.data
+    def imu_data_callback(self, data):
+        print "imu_data_callback received data: ", "roll: ", data.roll, " pitch: ", data.pitch, " yaw: ", data.yaw
+        self.current_yaw = data.yaw
+
 
     def update_desired_yaw(self):
         if not(len(self.river_side_data) == 0):
