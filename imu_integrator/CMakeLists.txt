@@ -7,6 +7,8 @@ SET(CMAKE_CXX_FLAGS "-std=c++0x")
 find_package(catkin REQUIRED COMPONENTS
     roscpp
     std_msgs
+    message_generation
+    cauv_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -191,6 +193,6 @@ add_executable(imu_publisher_bin src/ImuPublisher.cpp)
 link_directories(/home/andrew/Documents/CAUV/LibFolder)
 target_link_libraries(imu_publisher_bin ${catkin_LIBRARIES} SbgComSerial)
 # add_dependencies(imu_publisher msg_definitions_generate_messages_cpp)
-
+add_dependencies(imu_publisher_bin msg_definitions_generate_messages_cpp)
 
 

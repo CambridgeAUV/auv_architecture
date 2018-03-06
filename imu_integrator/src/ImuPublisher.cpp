@@ -5,6 +5,7 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include <iostream>
+#include "cauv_msgs/imu.h"
 
 
 //----------------------------------------------------------------------//
@@ -156,13 +157,13 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "ImuPublisher");
     ros::NodeHandle n;
     //The ros topic for the imu data is called 'imu_data'
-    //ros::Publisher imu_pub = n.advertise<msg_definitions::imu_data>("imu_data", 1000);
+    ros::Publisher imu_pub = n.advertise<cauv_msgs::imu>("imu_data", 1000);
 
 
     SbgProtocolHandle protocolHandle;
     SbgErrorCode error;
     SbgOutput output;
-    //msg_definitions::imu_data msg_packet; 
+    cauv_msgs::imu msg_packet;
 
     Integrator integrator;
 
@@ -192,15 +193,21 @@ int main(int argc, char** argv)
         
         for(int i = 0; i < 200; ++i)
         {
-            error = sbgGetSpecificOutput(protocolHandle, SBG_OUTPUT_ACCELEROMETERS, &output);
+            error = sbgGetSpecificOutput(protocolHandle, SBG_OUTPUT_EULER | SBG_OUTPUT_ACCELEROMETERS, &output);
             if (error == SBG_NO_ERROR)
             {
-               vector accelerations(output.accelerometers[0], output.accelerometers[1], output.accelerometers[2]);
-               integrator.Update(accelerations); 
+               //vector accelerations(output.accelerometers[0], output.accelerometers[1], output.accelerometers[2]);
+               //integrator.Update(accelerations); 
+
+               vector euler_angles(output.stateEuler[0], output.stateEuler[1], output.stateEuler[2]);
+               std::cout << "Euler angles: " << euler_angles.x << " " << euler_angles.y << " " << euler_angles.z << std::endl;
+               msg_packet.roll = euler_angles.x;
+               msg_packet.pitch = euler_angles.y;
+               msg_packet.yaw = euler_angles.z;
 
 
 
-                //imu_pub.publish(msg_packet);
+                imu_pub.publish(msg_packet);
                 ros::spinOnce();
             }
 
